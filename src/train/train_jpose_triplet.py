@@ -15,7 +15,7 @@ import defaults.EPIC_JPOSE as EPIC_JPOSE
 
 from models.jpose import JPOSE
 from datasets.jpose_dataset import create_epic_jpose_dataset
-from losses.triplet import TripletLoss, HardOnlineTripletLoss
+from losses.triplet import TripletLoss
 from evaluation import nDCG
 from train.train_mmen_triplet import initialise_nDCG_values
 
@@ -277,6 +277,5 @@ if __name__ == '__main__':
     parser.set_defaults(
             num_triplets=EPIC_JPOSE.num_triplets,
             triplet_sampling_rate=EPIC_JPOSE.triplet_sampling_rate,
-            online_hard=EPIC_JPOSE.online_hard
     )
     main(parser.parse_args())
