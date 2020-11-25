@@ -1,0 +1,40 @@
+name: JPoSE
+channels:
+  - defaults
+dependencies:
+  - _libgcc_mutex
+  - blas=1.0
+  - ca-certificates
+  - certifi
+  - intel-openmp
+  - ld_impl_linux-64
+  - libedit
+  - libffi
+  - libgcc-ng
+  - libstdcxx-ng
+  - mkl
+  - mkl-service
+  - mkl_fft
+  - mkl_random
+  - ncurses
+  - numpy
+  - numpy-base
+  - openssl
+  - pandas
+  - pip
+  - python
+  - python-dateutil
+  - pytorch
+  - pytz
+  - readline
+  - setuptools
+  - six
+  - sqlite
+  - torchvision
+  - tqdm
+  - tk
+  - wheel
+  - xz
+  - zlib
+  - pip:
+        - tensorboard==2.2.2
