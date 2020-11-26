@@ -141,4 +141,5 @@ kind that result from the use of this code.
 ## References
 [1] Wray et al, Fine-Grained Action Retrieval through Multiple Parts-of-Speech
 Embeddings, ICCV 2019
+
 [2] Mikolov et al, Efficient estimation of word representations in vector space, ArXiv 2013.
