@@ -16,25 +16,25 @@ def create_epic_mmen_dataset(caption_type, is_train=True,
     is_train_str = 'train' if is_train else 'test'
     #Find location of word features based on caption type and load
     if caption_type in ['caption', 'verb', 'noun']:
-        word_features_path = '{}_features_action_retrieval_{}_pre-release_v6.pkl'.format(caption_type, is_train_str)
+        word_features_path = 'EPIC_100_retrieval_{}_text_features_{}.pkl'.format(caption_type, is_train_str)
     else:
         raise NotImplementedError(caption_type)
     word_features_path = './data/text_features/{}'.format(word_features_path)
     text_features = pd.read_pickle(word_features_path)
 
     #load video features
-    video_features = pd.read_pickle('./data/video_features/EPIC_2020_{}_RGB+Flow+Audio_pre-release_v3.pkl'.format(is_train_str))
+    video_features = pd.read_pickle('./data/video_features/EPIC_100_retrieval_{}_features_mean.pkl'.format(is_train_str))
     video_features = np.array(video_features['features'])
 
     #Load relational dictionaries
-    rel_dicts = pd.read_pickle('./data/relational/{}_relational_action_retrieval_{}_pre-release_v6.pkl'.format(caption_type, is_train_str))
+    rel_dicts = pd.read_pickle('./data/relational/EPIC_100_retrieval_{}_relational_dict_{}.pkl'.format(caption_type, is_train_str))
     rel_dicts = [rel_dicts['vid2class'], rel_dicts['class2vid'],
             rel_dicts['sent2class'], rel_dicts['class2sent']]
 
     #Load relevancy matrix
     rel_matrix = None
     if not is_train:
-        rel_matrix = pd.read_pickle('./data/relevancy/{}_relevancy_action_retrieval_{}_pre-release_v6.pkl'.format(caption_type, is_train_str))
+        rel_matrix = pd.read_pickle('./data/relevancy/EPIC_100_retrieval_{}_relevancy_mat.pkl'.format(is_train_str))
     if action_dataset:
         return MMEN_Dataset_Action(video_features, text_features, rel_dicts,
                 batch_size=batch_size, num_triplets=num_triplets,
