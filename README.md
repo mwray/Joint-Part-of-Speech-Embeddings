@@ -6,8 +6,15 @@ Embeddings[1]. This is a re-implementation of the original paper which used
 tensorflow, and now uses Python 3 and PyTorch.
 
 ## Features
-Features and trained models are coming soon! This will include the empty data
-directory allowing for training of the models.
+
+The Features for the videos can be found [here](https://www.dropbox.com/s/5olqm0fwa81ywl8/features.zip?dl=0) (**~10GB**).
+Inside the zip are two files, train.pkl and test.pkl. Both are pickle files containing the features for the Multi-Instance Retrieval train and test splits respectively.
+
+Each represents a python dictionary containing the 'RGB', 'Flow' and 'Audio' features as a matrix of size nx25x1024 where n is the number of videos (67,217/9,668).
+The ordering of the videos is the same as in `EPIC_100_retrieval_train.pkl` and `EPIC_100_retrieval_test.pkl` found in the [EPIC-KITCHENS-100 repo](https://github.com/epic-kitchens/epic-kitchens-100-annotations).
+
+
+Trained models are coming soon! This will include the data directory allowing for training of the models.
 
 ## Quick Start Guide
 
