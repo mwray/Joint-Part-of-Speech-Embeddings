@@ -3,6 +3,7 @@ import sys
 import argparse
 
 import numpy as np
+import pandas as pd
 import torch as th
 import torch.optim as optim
 import torch.nn as nn
@@ -79,6 +80,33 @@ def main(args):
         mmen.cuda()
 
     test_epoch(mmen, test_ds, gpu=args.gpu)
+    if args.challenge_submission != '':
+        test_ds = create_epic_mmen_dataset(model_args.caption_type, is_train=False, batch_size=model_args.batch_size, num_triplets=model_args.num_triplets, is_test=True)
+        test_df = pd.read_pickle('./data/dataframes/EPIC_100_retrieval_test.pkl')
+        test_sentence_df = pd.read_pickle('./data/dataframes/EPIC_100_retrieval_test_sentence.pkl')
+        vis_feat, txt_feat = test_ds.get_eval_batch(gpu=args.gpu)
+        out_dict = mmen.forward([{'v': vis_feat}, {'t': txt_feat}])
+
+        vis_feat = out_dict[0]['v']
+        txt_feat = out_dict[1]['t']
+
+        if args.gpu:
+            vis_feat = vis_feat.cpu()
+            txt_feat = txt_feat.cpu()
+        test_vis = vis_feat.detach().numpy()
+        test_txt = txt_feat.detach().numpy()
+
+        sim_mat = test_vis.dot(test_txt.T)
+        out_dict = {}
+        out_dict['version'] = 0.1
+        out_dict['challenge'] = 'multi_instance_retrieval'
+        out_dict['sim_mat'] = sim_mat
+        out_dict['vis_ids'] = test_df.index
+        out_dict['txt_ids'] = test_sentence_df.index
+        out_dict['sls_pt'] = 2
+        out_dict['sls_tl'] = 3
+        out_dict['sls_td'] = 3
+        pd.to_pickle(out_dict, args.challenge_submission, protocol=4)
 
 
 
@@ -87,9 +115,11 @@ if __name__ == '__main__':
 
     parser.add_argument('MODEL_PATH', type=str, help='Path of model to load')
     parser.add_argument('--gpu', type=bool, help='Whether or not to use the gpu for testin. [False]')
+    parser.add_argument('--challenge-submission', type=str, help='Whether or not to create a challenge submission with given output path. ['']')
 
     parser.set_defaults(
-            gpu=False
+            gpu=False,
+            challenge_submission=''
     )
 
     main(parser.parse_args())
