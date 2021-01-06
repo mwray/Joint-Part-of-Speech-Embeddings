@@ -3,6 +3,7 @@ import sys
 import argparse
 
 import numpy as np
+import pandas as pd
 import torch as th
 import torch.optim as optim
 import torch.nn as nn
@@ -21,7 +22,8 @@ from train.train_mmen_triplet import initialise_nDCG_values
 from train.train_jpose_triplet import initialise_jpose_nDCG_values, create_modality_dicts
 
 
-def test_epoch(model, dataset, PoS_list, gpu=False, use_learned_comb_func=True):
+
+def get_features(model, dataset, PoS_list, gpu=False, use_learned_comb_func=True):
     model.eval()
 
     vis_feat, txt_feat = dataset.get_eval_batch(PoS_list, gpu=gpu)
@@ -41,6 +43,15 @@ def test_epoch(model, dataset, PoS_list, gpu=False, use_learned_comb_func=True):
         txt_out = txt_out.cpu()
     vis_out = vis_out.detach().numpy()
     txt_out = txt_out.detach().numpy()
+
+    return vis_out, txt_out
+
+
+
+def test_epoch(model, dataset, PoS_list, gpu=False, use_learned_comb_func=True):
+    model.eval()
+
+    vis_out, txt_out = get_features(model, dataset, PoS_list, gpu=False, use_learned_comb_func=True)
 
     vis_sim_matrix = vis_out.dot(txt_out.T)
     txt_sim_matrix = vis_sim_matrix.T
@@ -83,8 +94,22 @@ def main(args):
         jpose.cuda()
 
     test_epoch(jpose, test_ds, PoS_list, gpu=args.gpu, use_learned_comb_func=args.comb_func)
-
-
+    if args.challenge_submission != '':
+        test_ds = create_epic_jpose_dataset(is_train=False, batch_size=model_args.batch_size, num_triplets=model_args.num_triplets, is_test=True)
+        test_df = pd.read_pickle('./data/dataframes/EPIC_100_retrieval_test.pkl')
+        test_sentence_df = pd.read_pickle('./data/dataframes/EPIC_100_retrieval_test_sentence.pkl')
+        test_vis, test_txt = get_features(jpose, test_ds, PoS_list, gpu=args.gpu, use_learned_comb_func=args.comb_func)
+        sim_mat = test_vis.dot(test_txt.T)
+        out_dict = {}
+        out_dict['version'] = 0.1
+        out_dict['challenge'] = 'multi_instance_retrieval'
+        out_dict['sim_mat'] = sim_mat
+        out_dict['vis_ids'] = test_df.index
+        out_dict['txt_ids'] = test_sentence_df.index
+        out_dict['sls_pt'] = 2
+        out_dict['sls_tl'] = 3
+        out_dict['sls_td'] = 3
+        pd.to_pickle(out_dict, args.challenge_submission)
 
 if __name__ == '__main__':
     parser = argparse.ArgumentParser("Test Joint Part-of-Speech Embedding Network (JPoSE) using Triplets")
@@ -92,10 +117,12 @@ if __name__ == '__main__':
     parser.add_argument('MODEL_PATH', type=str, help='Path of model to load')
     parser.add_argument('--gpu', type=bool, help='Whether or not to use the gpu for testin. [False]')
     parser.add_argument('--comb-func', type=bool, help='Whether or not to use the combination func for testing. [False]')
+    parser.add_argument('--challenge-submission', type=str, help='Whether or not to create a challenge submission with given output path. ['']')
 
     parser.set_defaults(
             gpu=False,
             comb_func=False,
+            challenge_submission=''
     )
 
     main(parser.parse_args())

@@ -7,13 +7,13 @@ from datasets import to_tensor, sample_triplets, convert_rel_dicts_to_uids
 from datasets.mmen_dataset import MMEN_Dataset, create_epic_mmen_dataset
 import defaults.EPIC_MMEN as EPIC_MMEN
 
-def create_epic_jpose_dataset(is_train=True, batch_size=EPIC_MMEN.batch_size, num_triplets=EPIC_MMEN.num_triplets):
+def create_epic_jpose_dataset(is_train=True, batch_size=EPIC_MMEN.batch_size, num_triplets=EPIC_MMEN.num_triplets, is_test=False):
     verb_ds = create_epic_mmen_dataset('verb', is_train=is_train,
-            batch_size=batch_size, num_triplets=num_triplets, action_dataset=False)
+            batch_size=batch_size, num_triplets=num_triplets, action_dataset=False, is_test=is_test)
     noun_ds = create_epic_mmen_dataset('noun', is_train=is_train,
-            batch_size=batch_size, num_triplets=num_triplets, action_dataset=False)
+            batch_size=batch_size, num_triplets=num_triplets, action_dataset=False, is_test=is_test)
     action_ds = create_epic_mmen_dataset('caption', is_train=is_train,
-            batch_size=batch_size, num_triplets=num_triplets, action_dataset=True)
+            batch_size=batch_size, num_triplets=num_triplets, action_dataset=True, is_test=is_test)
 
     return JPOSE_Dataset(verb_ds, noun_ds, action_ds, batch_size=batch_size, num_triplets=num_triplets)
 

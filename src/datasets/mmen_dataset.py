@@ -9,11 +9,13 @@ import defaults.EPIC_MMEN as EPIC_MMEN
 
 def create_epic_mmen_dataset(caption_type, is_train=True,
         batch_size=EPIC_MMEN.batch_size, num_triplets=EPIC_MMEN.num_triplets,
-        action_dataset=False):
+        action_dataset=False, is_test=True):
     """
     Creates a mmen dataset object for EPIC2020 using default locations of feature files and relational dicts files.
     """
     is_train_str = 'train' if is_train else 'validation'
+    if is_test:
+        is_train_str = 'test'
     #Find location of word features based on caption type and load
     if caption_type in ['caption', 'verb', 'noun']:
         word_features_path = 'EPIC_100_retrieval_{}_text_features_{}.pkl'.format(caption_type, is_train_str)
@@ -36,7 +38,7 @@ def create_epic_mmen_dataset(caption_type, is_train=True,
 
     #Load relevancy matrix
     rel_matrix = None
-    if not is_train:
+    if not is_train and not is_test:
         rel_matrix = pd.read_pickle('./data/relevancy/EPIC_100_retrieval_{}_relevancy_mat.pkl'.format(is_train_str))
     if action_dataset:
         return MMEN_Dataset_Action(video_features, text_features, rel_dicts,
