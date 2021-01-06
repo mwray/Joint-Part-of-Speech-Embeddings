@@ -19,22 +19,38 @@ Trained models are coming soon! This will include the data directory allowing fo
 ## Quick Start Guide
 
 ### Requirements
-A conda environment can be installed using `conda env -n create JPoSE_environment.yml`.
+A conda environment can be installed using `conda env -n create JPoSE_environment.yml`. For the exact versions see `JPoSE_environment_detailed.yml`.
 This project has been tested with pytorch 1.2 and 1.4.
 
 ### Data
 You can download the data directory including the dataframes and pickle files
-used to train JPoSE _COMING SOON_.
+used to train JPoSE [here](https://www.dropbox.com/s/bs6y50xkl1rbe20/JPoSE_data.zip?dl=0).
 
 ### Training
 The models can be trained using the scripts within src/train using the following
-command: `python -m train.train_JPoSE_triplet`. (Note that this requires adding
+command: `python -m train.train_jpose_triplet`. (Note that this requires adding
 the src/ directory into your python path: `export PYTHONPATH=src/`).
 
 This will train the model using the default values within in 
 `/src/defaults/EPIC_JPOSE.py`. The parameters of the model can be passed to the
-script, running `python -m train.train_JPoSE_triplet --help` will give the full
+script, running `python -m train.train_jpose_triplet --help` will give the full
 list of arguments.
+
+### Testing
+Models can be evaluated on the validation set using the scripts within src/train 
+and the following command: `python -m train.test_JPoSE_triplet /path/to/model/`.
+This can be tested with the pre-trained EPIC-KITCHENS-100 model inside the data
+directory as follows:
+
+```
+$ python -m train.test_jpose_triplet ./data/models/JPoSE_BEST/model/EPIC_100_retrieval_JPoSE_BEST.pth                       
+Namespace(action_weight=1.0, batch_size=64, checkpoint_rate=10, comb_func='cat', comb_func_start=0, embedding_size=256, gpu=False, learning_rate=0.01, margin=1.0, momentum=0.9, noun_weight=1.0, num_epochs=100, num_layers=2, num_triplets=10, online_hard=False, optimiser='SGD', out_dir='./logs/runs', triplet_sampling_rate=10, tt_weight=1.0, tv_weight=2.0, verb_weight=1.0, vt_weight=1.0, vv_weight=1.0)
+nDCG: VT:0.707 TV:0.674 AVG:0.690
+mAP: VT:0.757 TV:0.712 AVG:0.734
+```
+This command can be used to check the model performance on the validation set to 
+ensure everything is working correctly. To evaluate the model on the 
+EPIC-KITCHENS-100 test set, details can be found [here](https://github.com/epic-kitchens/C5-Multi-Instance-Retrieval).
 
 ## Differences to [1]
 Due to the different implementation, there are a few differences in details, particularly training details.
