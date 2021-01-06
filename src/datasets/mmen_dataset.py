@@ -9,7 +9,7 @@ import defaults.EPIC_MMEN as EPIC_MMEN
 
 def create_epic_mmen_dataset(caption_type, is_train=True,
         batch_size=EPIC_MMEN.batch_size, num_triplets=EPIC_MMEN.num_triplets,
-        action_dataset=False, is_test=True):
+        action_dataset=False, is_test=False):
     """
     Creates a mmen dataset object for EPIC2020 using default locations of feature files and relational dicts files.
     """
