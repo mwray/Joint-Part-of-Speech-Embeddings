@@ -13,7 +13,7 @@ def create_epic_mmen_dataset(caption_type, is_train=True,
     """
     Creates a mmen dataset object for EPIC2020 using default locations of feature files and relational dicts files.
     """
-    is_train_str = 'train' if is_train else 'test'
+    is_train_str = 'train' if is_train else 'validation'
     #Find location of word features based on caption type and load
     if caption_type in ['caption', 'verb', 'noun']:
         word_features_path = 'EPIC_100_retrieval_{}_text_features_{}.pkl'.format(caption_type, is_train_str)
@@ -27,9 +27,12 @@ def create_epic_mmen_dataset(caption_type, is_train=True,
     video_features = np.array(video_features['features'])
 
     #Load relational dictionaries
-    rel_dicts = pd.read_pickle('./data/relational/EPIC_100_retrieval_{}_relational_dict_{}.pkl'.format(caption_type, is_train_str))
-    rel_dicts = [rel_dicts['vid2class'], rel_dicts['class2vid'],
-            rel_dicts['sent2class'], rel_dicts['class2sent']]
+    if is_train:
+        rel_dicts = pd.read_pickle('./data/relational/EPIC_100_retrieval_{}_relational_dict_{}.pkl'.format(caption_type, is_train_str))
+        rel_dicts = [rel_dicts['vid2class'], rel_dicts['class2vid'],
+                rel_dicts['sent2class'], rel_dicts['class2sent']]
+    else:
+        rel_dicts = None
 
     #Load relevancy matrix
     rel_matrix = None
@@ -50,7 +53,11 @@ class MMEN_Dataset:
     Dataset wrapper for a multi-modal embedding Network Dataset.
     """
     def __init__(self, x, y, relation_dicts, batch_size=64, num_triplets=10, x_name='v', y_name='t', relevancy_matrix=None):
-        x_to_class, class_to_x, y_to_class, class_to_y = relation_dicts
+        if relation_dicts is None:
+            self.test_dataset = True
+        else:
+            self.test_dataset = False
+            x_to_class, class_to_x, y_to_class, class_to_y = relation_dicts
         self._x = x
         self._y = y
 
@@ -61,26 +68,29 @@ class MMEN_Dataset:
         self.y_to_x_name = '{}{}'.format(y_name, x_name)
         self.y_to_y_name = '{}{}'.format(y_name, y_name)
 
-        self.triplets = {self.x_to_x_name: [], self.x_to_y_name: [],
-                self.y_to_x_name: [], self.y_to_y_name: []}
 
         self.x_size = x.shape[-1]
         self.x_len = x.shape[0]
         self.y_size = y.shape[-1]
         self.y_len = y.shape[0]
 
-        x_uids = list(x_to_class.keys())
-        self._x_idxs = np.array(list(range(len(x_uids))))
-        self.x_uid_to_idx = {uid: idx for idx, uid in enumerate(x_uids)}
-        self.x_idx_to_uid = {idx: uid for idx, uid in enumerate(x_uids)}
-        self._y_idxs = np.array(list(y_to_class.keys()))
 
-        x_to_class, class_to_x = convert_rel_dicts_to_uids(x_to_class, class_to_x, self.x_uid_to_idx)
+        if not self.test_dataset:
+            self.triplets = {self.x_to_x_name: [], self.x_to_y_name: [],
+                    self.y_to_x_name: [], self.y_to_y_name: []}
 
-        self.x_to_class = x_to_class
-        self.class_to_x = class_to_x
-        self.y_to_class = y_to_class
-        self.class_to_y = class_to_y
+            x_uids = list(x_to_class.keys())
+            self._x_idxs = np.array(list(range(len(x_uids))))
+            self.x_uid_to_idx = {uid: idx for idx, uid in enumerate(x_uids)}
+            self.x_idx_to_uid = {idx: uid for idx, uid in enumerate(x_uids)}
+            self._y_idxs = np.array(list(y_to_class.keys()))
+
+            x_to_class, class_to_x = convert_rel_dicts_to_uids(x_to_class, class_to_x, self.x_uid_to_idx)
+
+            self.x_to_class = x_to_class
+            self.class_to_x = class_to_x
+            self.y_to_class = y_to_class
+            self.class_to_y = class_to_y
 
         self.batch_size = batch_size
         self.num_triplets = num_triplets
