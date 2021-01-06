@@ -185,6 +185,38 @@ def test_epoch(model, dataset, PoS_list, writer, epoch_num, out_dir, gpu=False, 
                 'x_idxs': x_idxs, 'y_idxs': y_idxs}
         utils.output.save_results(out_dir, all_dict, 'pre_mean_nDCG')
 
+def create_modality_dicts(args, x_size, y_size):
+    modality_dicts = {
+        'verb':{
+            't': {
+                'num_layers': args.num_layers,
+                'layer_sizes': [y_size, args.embedding_size]
+            },
+            'v': {
+                'num_layers': args.num_layers,
+                'layer_sizes': [x_size, args.embedding_size]
+            }
+        },
+        'noun':{
+            't': {
+                'num_layers': args.num_layers,
+                'layer_sizes': [y_size, args.embedding_size]
+            },
+            'v': {
+                'num_layers': args.num_layers,
+                'layer_sizes': [x_size, args.embedding_size]
+            }
+        }
+    }
+
+    if args.comb_func in ['sum', 'max', 'cat']:
+        comb_func = {args.comb_func: []}
+    elif args.comb_func == 'fc':
+        comb_func = {args.comb_func: (2 * args.embedding_size, args.embedding_size)}
+    else:
+        raise NotImplementedError('Combined Function: {} not implemented.'.format(args.comb_func))
+
+    return modality_dicts, comb_func
 
 def main(args):
     print(args)
@@ -197,37 +229,7 @@ def main(args):
 
     writer = SummaryWriter(log_dir=os.path.join(full_out_dir, 'results'))
 
-    modality_dicts = {
-        'verb':{
-            't': {
-                'num_layers': args.num_layers,
-                'layer_sizes': [train_ds.y_size, args.embedding_size]
-            },
-            'v': {
-                'num_layers': args.num_layers,
-                'layer_sizes': [train_ds.x_size, args.embedding_size]
-            }
-        },
-        'noun':{
-            't': {
-                'num_layers': args.num_layers,
-                'layer_sizes': [train_ds.y_size, args.embedding_size]
-            },
-            'v': {
-                'num_layers': args.num_layers,
-                'layer_sizes': [train_ds.x_size, args.embedding_size]
-            }
-        }
-    }
-
-    if args.comb_func in ['sum', 'max', 'cat']:
-        comb_func = {args.comb_func: []}
-    elif args.comb_func == 'fc':
-        comb_func = {args.comb_func: (2 * args.embedding_size, args.embedding_size)}
-    elif args.comb_func == 'res' or args.comb_func == 'residual':
-        comb_func = {args.comb_func: (2 * args.embedding_size, 2 * args.embedding_size)}
-    else:
-        raise NotImplementedError('Combined Function: {} not implemented'.format(args.comb_func))
+    modality_dicts, comb_func = create_modality_dicts(args, train_ds.x_size, train_ds.y_size)
 
     cross_modal_weights_dict = {'tt': args.tt_weight,
                                 'tv': args.tv_weight,

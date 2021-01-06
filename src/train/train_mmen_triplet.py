@@ -7,6 +7,7 @@ import torch.optim as optim
 import torch.nn as nn
 
 from tqdm import tqdm
+from torch.utils.tensorboard import SummaryWriter
 
 import utils
 import parsing
@@ -58,8 +59,8 @@ def initialise_nDCG_values(dataset):
     vis_k_counts = nDCG.calculate_k_counts(relevancy_matrix)
     txt_k_counts = nDCG.calculate_k_counts(relevancy_matrix.T)
 
-    vis_IDCG = nDCG.calculate_IDCG(relevancy_matrix, relevancy_matrix, vis_k_counts)
-    txt_IDCG = nDCG.calculate_IDCG(relevancy_matrix.T, relevancy_matrix.T, txt_k_counts)
+    vis_IDCG = nDCG.calculate_IDCG(relevancy_matrix, vis_k_counts)
+    txt_IDCG = nDCG.calculate_IDCG(relevancy_matrix.T, txt_k_counts)
 
     k_counts_dict = {'v': vis_k_counts, 't': txt_k_counts}
     IDCG_dict = {'v': vis_IDCG, 't': txt_IDCG}
@@ -67,7 +68,7 @@ def initialise_nDCG_values(dataset):
     return IDCG_dict, k_counts_dict
 
 
-def test_epoch(model, dataset, writer, gpu=False):
+def test_epoch(model, dataset, writer, epoch_num, out_dir, gpu=False, final_run=False):
     model.eval()
 
     vis_feat, txt_feat = dataset.get_eval_batch(gpu=gpu)
@@ -152,8 +153,8 @@ def main(args):
     }
 
     test_IDCG_values, test_k_counts = initialise_nDCG_values(test_ds)
-    test_ds.IDCG = test_IDCG_values
-    test_ds.k_values = test_k_counts
+    test_ds.IDCG_values = test_IDCG_values
+    test_ds.k_counts = test_k_counts
 
     for epoch_num in range(args.num_epochs):
         print('Beginning Epoch {}'.format(epoch_num + 1))
@@ -166,7 +167,7 @@ def main(args):
         if (epoch_num + 1) % args.checkpoint_rate == 1:
             utils.output.save_model(full_out_dir, mmen, epoch_num)
         #Test
-        test_epoch(mmen, test_ds, writer, epoch_num, full_out_dir, gpu=args.gpu)
+        test_epoch(mmen, test_ds, writer, epoch_num, full_out_dir, gpu=args.gpu, final_run=(epoch_num+1==args.num_epochs))
 
     utils.output.save_model(full_out_dir, mmen, epoch_num)
     print('#Saved models and results in {}'.format(full_out_dir))
