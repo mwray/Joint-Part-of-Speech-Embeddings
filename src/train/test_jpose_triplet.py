@@ -109,7 +109,7 @@ def main(args):
         out_dict['sls_pt'] = 2
         out_dict['sls_tl'] = 3
         out_dict['sls_td'] = 3
-        pd.to_pickle(out_dict, args.challenge_submission)
+        pd.to_pickle(out_dict, args.challenge_submission, protocol=4)
 
 if __name__ == '__main__':
     parser = argparse.ArgumentParser("Test Joint Part-of-Speech Embedding Network (JPoSE) using Triplets")
