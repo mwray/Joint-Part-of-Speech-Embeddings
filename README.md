@@ -13,9 +13,6 @@ Inside the zip are two files, train.pkl and test.pkl. Both are pickle files cont
 Each represents a python dictionary containing the 'RGB', 'Flow' and 'Audio' features as a matrix of size nx25x1024 where n is the number of videos (67,217/9,668).
 The ordering of the videos is the same as in `EPIC_100_retrieval_train.pkl` and `EPIC_100_retrieval_test.pkl` found in the [EPIC-KITCHENS-100 repo](https://github.com/epic-kitchens/epic-kitchens-100-annotations).
 
-
-Trained models are coming soon! This will include the data directory allowing for training of the models.
-
 ## Quick Start Guide
 
 ### Requirements
