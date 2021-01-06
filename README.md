@@ -50,7 +50,11 @@ mAP: VT:0.757 TV:0.712 AVG:0.734
 ```
 This command can be used to check the model performance on the validation set to 
 ensure everything is working correctly. To evaluate the model on the 
-EPIC-KITCHENS-100 test set, details can be found [here](https://github.com/epic-kitchens/C5-Multi-Instance-Retrieval).
+EPIC-KITCHENS-100 test set, the parameter:
+
+`--challenge-submission=/path/to/submission_out_file.pkl` can be passed into 
+`train.test_jpose_triplet` in order to generate this file. Other details on 
+submission can be found [here](https://github.com/epic-kitchens/C5-Multi-Instance-Retrieval).
 
 ## Differences to [1]
 Due to the different implementation, there are a few differences in details, particularly training details.
