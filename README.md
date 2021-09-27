@@ -116,7 +116,7 @@ an example on how to do this. A `JPOSE_Dataset` is a wrapper for three
 `MMEN_Datasets` which correspond to Verb, Noun and Actions.
 
 The input files required are as follows for each `MMEN_Dataset`:
-* word embedding features, i.e. from Word2Vec[2]
+* word embedding features, i.e. from Word2Vec[2]. The model used can be found [here](https://www.dropbox.com/s/f2f85nqadv3cmkm/wiki_new.zip?dl=0).
 * video features, from any pre-trained model
 * relational dictionaries. These relate videos to classes and sentences to
   classes and vice versa, note that this is because of the many-to-many 
