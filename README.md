@@ -95,16 +95,17 @@ If you train or evaluate on EPIC-Kitchens please kindly cite:
 ```
 or
 ```
-@article{damen2020rescaling,
-   title={Rescaling Egocentric Vision},
-   author={Damen, Dima and Doughty, Hazel and Farinella, Giovanni Maria  and Furnari, Antonino 
+@article{damen2022rescaling,
+           title={Rescaling Egocentric Vision: Collection, Pipeline and Challenges for EPIC-KITCHENS-100},
+           author={Damen, Dima and Doughty, Hazel and Farinella, Giovanni Maria  and and Furnari, Antonino 
            and Ma, Jian and Kazakos, Evangelos and Moltisanti, Davide and Munro, Jonathan 
            and Perrett, Toby and Price, Will and Wray, Michael},
-           journal   = {CoRR},
-           volume    = {abs/2006.13256},
-           year      = {2020},
-           ee        = {http://arxiv.org/abs/2006.13256},
-}
+           journal   = {International Journal of Computer Vision (IJCV)},
+           year      = {2022},
+           volume = {130},
+           pages = {33–55},
+           Url       = {https://doi.org/10.1007/s11263-021-01531-2}
+} 
 ```
 depending on the version of the dataset.
 
