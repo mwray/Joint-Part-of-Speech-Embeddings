@@ -42,8 +42,8 @@ def create_sentence_df(df):
     missing_classes = set(df.action_class.unique()) - set(classes.values())
     i = len(indices)
     for class_ in missing_classes:
-        sentences[i] = subset_df.iloc[0].narration
         subset_df = df[df.action_class.apply(lambda x: x == class_)]
+        sentences[i] = subset_df.iloc[0].narration
         indices[i] = subset_df.index[0]
         classes[i] = subset_df.iloc[0].action_class
         verb_class[i] = subset_df.iloc[0].verb_class
