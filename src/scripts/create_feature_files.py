@@ -116,6 +116,25 @@ def create_noun_only_vector(model, nouns, type_='average'):
     sentence_vector = col_func(np.array([get_word_embedding(model, n) for n in final_nouns]), axis=0)
     return sentence_vector
 
+def fix_sentence_df(df, sentence_df):
+    missing_actions = set(df.action_uid) - set(sentence_df.action_uid)
+    for uid in missing_actions:
+        subset_df = df[df.action_uid.apply(lambda x: x == uid)]
+        new_row = {}
+        new_row['index'] = subset_df.index[0]
+        new_row['sentence'] = subset_df.iloc[0].sentence
+        new_row['action_class'] = subset_df.iloc[0].action_class
+        new_row['verb_class'] = subset_df.iloc[0].verb_class
+        new_row['noun_class'] = subset_df.iloc[0].all_noun_classes
+        new_row['verb'] = subset_df.iloc[0].verb
+        new_row['nouns'] = subset_df.iloc[0].all_nouns
+        new_row['noun'] = subset_df.iloc[0].noun
+        new_row['action_uid'] = subset_df.iloc[0].action_uid
+        new_row['verb_uid'] = subset_df.iloc[0].verb_uid
+        new_row['noun_uid'] = subset_df.iloc[0].noun_uid
+        sentence_df = sentence_df.append(new_row, ignore_index=True)
+    return sentence_df
+
 
 def main(args):
     df = pd.read_pickle(args.dataframe)
